@@ -5,6 +5,12 @@
   "repository": "https://github.com/hughryan/node-web-alert.git",
   "author": "Hugh McDonald",
   "license": "MIT",
+	"scripts": {
+		"build": "docker build -t webalert .",
+		"start": "docker run -d -it --name webalert --mount type=bind,source=/var/lib/webalert,target=/usr/src/webalert webalert",
+		"stop": "docker stop webalert",
+		"prod": "node --use_strict index.js"
+	},
   "devDependencies": {
     "eslint": "4.13.1",
     "eslint-config-airbnb-base": "12.1.0",

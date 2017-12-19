@@ -13,4 +13,4 @@ RUN yarn install --production=true
 
 COPY . .
 
-CMD [ "yarn", "start" ]
+CMD [ "yarn", "prod" ]
