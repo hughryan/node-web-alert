@@ -1,0 +1,27 @@
+module.exports = {
+
+	'extends': ['eslint:recommended', 'airbnb-base'],
+
+	'env': {
+		node: true,
+		es6: true,
+		mocha: true,
+	},
+
+	'globals': {
+		expect: true,
+		sinon: true,
+	},
+
+	'rules': {
+		// eslint-plugin-import
+		'import/no-extraneous-dependencies': ['error', { 'devDependencies': ['**/test/**'] }],
+
+		// spacing
+		'indent': ['error', 'tab'],
+		'no-tabs': ['off'],
+		'object-curly-spacing': ['error', 'always'],
+		'no-trailing-spaces': ['error'],
+		'no-irregular-whitespace': ['error'],
+	}
+}
