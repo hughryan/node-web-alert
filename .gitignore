@@ -56,4 +56,10 @@ typings/
 
 # dotenv environment variables file
 .env
+setenv.sh
 
+# certs
+certs/
+
+# MacOS
+.DS_Store
