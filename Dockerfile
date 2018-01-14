@@ -4,7 +4,7 @@ ENV NODE_ENV=production
 
 WORKDIR /usr/src/webalert
 
-VOLUME /usr/src/webalert
+VOLUME /usr/src/webalert/screenshots
 
 COPY package.json ./
 COPY yarn.lock ./

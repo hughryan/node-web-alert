@@ -14,14 +14,13 @@ module.exports = {
 	},
 
 	'rules': {
-		// eslint-plugin-import
 		'import/no-extraneous-dependencies': ['error', { 'devDependencies': ['**/test/**'] }],
 
-		// spacing
 		'indent': ['error', 'tab'],
 		'no-tabs': ['off'],
 		'object-curly-spacing': ['error', 'always'],
 		'no-trailing-spaces': ['error'],
 		'no-irregular-whitespace': ['error'],
+		'no-console': ['off'],
 	}
 }

@@ -63,3 +63,6 @@ certs/
 
 # MacOS
 .DS_Store
+
+# Screenshots
+screenshots/
