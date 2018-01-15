@@ -1,14 +1,13 @@
-# node-web-alert - detect visual changes in webpages
+# node-web-alert
+##### Containerized node application for scraping webpages and reporting visual changes to Slack
 
-##### Containerized node application for scraping webpages and reporting visual changes to slack
-
-## #environment
+## environment
 copy `.env-template` to `.env` and set variables before building
 
-## #configuration
+## configuration
 set configuration in `./config/index.js`
 
-## #docker
+## docker
 
 #### `yarn build`
 builds node-web-alert.
@@ -22,7 +21,7 @@ stops node-web-alert and removes the container.
 #### `yarn attach`
 attaches to the node-web-alert terminal, `ctrl-p ctrl-q` to detach.
 
-## #development
+## development
 
 #### `yarn prod`
 starts node-web-alert locally.
