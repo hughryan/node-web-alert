@@ -2,7 +2,8 @@ FROM node:carbon
 
 ENV NODE_ENV=production
 
-RUN apt-get update && apt-get install -y gconf-service \
+RUN apt-get update && apt-get install -y \
+	gconf-service \
 	libasound2 \
 	libatk1.0-0 \
 	libc6 \
@@ -42,8 +43,6 @@ RUN apt-get update && apt-get install -y gconf-service \
 	wget
 
 WORKDIR /usr/src/webalert
-
-VOLUME /usr/src/webalert/screenshots
 
 COPY package.json ./
 COPY yarn.lock ./

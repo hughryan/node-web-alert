@@ -33,11 +33,13 @@ interval(
 
 				if (diff.image) writeFileSync(diffPath, diff.image);
 				if (diff.pixels > 0) {
-					console.log(`${diff.pixels} pixels changed on ${uri}!`);
+					console.log(`${diff.pixels} pixels changed on: ${uri}`);
 					slack.send(`Change detected on: ${uri}`);
 				} else {
 					console.log(`No change detected on: ${uri}`);
 				}
+			} else {
+				console.log(`No previous snapshot for: ${uri}`);
 			}
 			writeFileSync(imgPath, next);
 		} catch (err) {

@@ -8,7 +8,7 @@
 	"scripts": {
 		"attach": "docker attach webalert || exit 0",
 		"build": "docker build -t webalert .",
-		"start": "docker run -d -it --name webalert --mount type=bind,source=/var/lib/webalert/screenshots,target=/usr/src/webalert/screenshots webalert",
+		"start": "docker run -d -it --name webalert webalert",
 		"stop": "docker stop webalert",
 		"poststop": "docker rm webalert",
 		"prod": "node index.js"

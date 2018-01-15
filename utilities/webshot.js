@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 
 module.exports = async (uri) => {
 	const browser = await puppeteer.launch({
-		args: ['--disable-dev-shm-usage'],
+		args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
 	});
 	const onClose = () => browser.close();
 	process.on('SIGINT', onClose);
