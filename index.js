@@ -9,6 +9,7 @@ const mkdirp = require('mkdirp');
 const config = require('./config/index.js');
 const {
 	digest,
+	interval,
 	pngdiff,
 	slack,
 	webshot,
@@ -16,13 +17,14 @@ const {
 
 mkdirp.sync(config.path);
 
-setInterval(
+interval(
 	() => R.forEach(async (uri) => {
 		try {
 			const uriHash = digest(uri).slice(0, 12);
 			const imgPath = path.join(config.path, `${uriHash}.png`);
 			const diffPath = path.join(config.path, `${uriHash}_diff.png`);
 
+			console.log(`Taking snapshot of ${uri}`);
 			const next = await webshot(uri);
 
 			if (existsSync(imgPath)) {
@@ -33,6 +35,8 @@ setInterval(
 				if (diff.pixels > 0) {
 					console.log(`${diff.pixels} pixels changed on ${uri}!`);
 					slack.send(`Change detected on: ${uri}`);
+				} else {
+					console.log(`No change detected on: ${uri}`);
 				}
 			}
 			writeFileSync(imgPath, next);

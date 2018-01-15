@@ -6,6 +6,7 @@
 	"author": "Hugh McDonald",
 	"license": "MIT",
 	"scripts": {
+		"attach": "docker attach webalert || exit 0",
 		"build": "docker build -t webalert .",
 		"start": "docker run -d -it --name webalert --mount type=bind,source=/var/lib/webalert/screenshots,target=/usr/src/webalert/screenshots webalert",
 		"stop": "docker stop webalert",
