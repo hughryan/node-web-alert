@@ -34,7 +34,17 @@ interval(
 				if (diff.image) writeFileSync(diffPath, diff.image);
 				if (diff.pixels > 0) {
 					console.log(`${diff.pixels} pixels changed on: ${uri}`);
-					slack.send(`Change detected on: ${uri}`);
+					if (diff.image) {
+						slack.webhook.send(`Change detected on: ${uri}`);
+						const result = await slack.webclient.files.upload(
+							`${Date.now()}.png`,
+							{
+								file: diff.image,
+								channels: config.slack.channel,
+							},
+						);
+						console.log(`File uploaded: ${result.file.id}`);
+					}
 				} else {
 					console.log(`No change detected on: ${uri}`);
 				}

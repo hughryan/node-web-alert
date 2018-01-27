@@ -20,7 +20,7 @@ module.exports = async (uri) => {
 		waitUntil: 'networkidle0',
 	});
 
-	await page.waitFor(5000);
+	await page.waitFor(10000);
 
 	const shot = await page.screenshot();
 
