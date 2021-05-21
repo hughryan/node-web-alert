@@ -19,13 +19,12 @@ import {
 mkdirp.sync(config.path);
 
 interval(
-	() => R.forEach(async (uri) => {
+	() => Promise.all(R.map(async (uri) => {
 		try {
 			const uriHash = digest(uri).slice(0, 12);
 			const imgPath = path.join(config.path, `${uriHash}.png`);
 			const diffPath = path.join(config.path, `${uriHash}_diff.png`);
 
-			console.log(`Taking snapshot of ${uri}`);
 			const next = await webshot(uri);
 
 			if (existsSync(imgPath)) {
@@ -72,6 +71,6 @@ interval(
 		} catch (err) {
 			console.log(err);
 		}
-	}, config.watch),
+	}, config.watch)),
 	config.interval,
 );

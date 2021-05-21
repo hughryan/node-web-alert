@@ -1,6 +1,9 @@
 # node-web-alert
 ##### Containerized node application for scraping webpages and reporting visual changes to Slack or Discord
 
+## requirements
+requires node 16.x, docker, and yarn
+
 ## environment
 copy `.env-template` to `.env` and set variables before building
 
