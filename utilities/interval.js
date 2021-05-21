@@ -1,4 +1,4 @@
-module.exports = (fn, interval) => {
+export default (fn, interval) => {
 	fn();
 	setInterval(fn, interval);
 };

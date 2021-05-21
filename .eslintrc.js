@@ -1,26 +1,26 @@
-module.exports = {
+export default {
 
-	'extends': ['eslint:recommended', 'airbnb-base'],
+	extends: ['eslint:recommended', 'airbnb-base'],
 
-	'env': {
+	env: {
 		node: true,
 		es6: true,
 		mocha: true,
 	},
 
-	'globals': {
+	globals: {
 		expect: true,
 		sinon: true,
 	},
 
-	'rules': {
-		'import/no-extraneous-dependencies': ['error', { 'devDependencies': ['**/test/**'] }],
+	rules: {
+		'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/test/**'] }],
 
-		'indent': ['error', 'tab'],
+		indent: ['error', 'tab'],
 		'no-tabs': ['off'],
 		'object-curly-spacing': ['error', 'always'],
 		'no-trailing-spaces': ['error'],
 		'no-irregular-whitespace': ['error'],
 		'no-console': ['off'],
-	}
-}
+	},
+};

@@ -1,19 +1,20 @@
-const path = require('path');
-const {
+import path from 'path';
+import {
 	existsSync,
 	readFileSync,
 	writeFileSync,
-} = require('fs');
-const R = require('ramda');
-const mkdirp = require('mkdirp');
-const config = require('./config/index.js');
-const {
+} from 'fs';
+import R from 'ramda';
+import mkdirp from 'mkdirp';
+import config from './config/index.js';
+import {
 	digest,
 	interval,
 	pngdiff,
 	slack,
+	discord,
 	webshot,
-} = require('./utilities/index.js');
+} from './utilities/index.js';
 
 mkdirp.sync(config.path);
 
@@ -35,15 +36,31 @@ interval(
 				if (diff.pixels > 0) {
 					console.log(`${diff.pixels} pixels changed on: ${uri}`);
 					if (diff.image) {
-						slack.webhook.send(`Change detected on: ${uri}`);
-						const result = await slack.webclient.files.upload(
-							`${Date.now()}.png`,
-							{
-								file: diff.image,
-								channels: config.slack.channel,
-							},
-						);
-						console.log(`File uploaded: ${result.file.id}`);
+						if (slack.enabled) {
+							slack.webhook.send(`Change detected on: ${uri}`);
+							const result = await slack.webclient.files.upload(
+								`${Date.now()}.png`,
+								{
+									file: diff.image,
+									channels: config.slack.channel,
+								},
+							);
+							console.log('Posted slack webhook');
+						}
+						if (discord.enabled) {
+							await discord.webhook.send(`Change detected on: ${uri}`, {
+								embeds: [{
+								  thumbnail: {
+									   url: `attachment://${Date.now()}.png`
+									}
+								 }],
+								 files: [{
+									attachment: diffPath,
+									name: `${Date.now()}.png`
+								 }]
+							  })
+							console.log('Posted discord webhook');
+						}
 					}
 				} else {
 					console.log(`No change detected on: ${uri}`);

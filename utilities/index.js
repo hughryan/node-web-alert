@@ -1,13 +1,15 @@
-const digest = require('./digest.js');
-const interval = require('./interval.js');
-const pngdiff = require('./pngdiff.js');
-const slack = require('./slack.js');
-const webshot = require('./webshot.js');
+import digest from './digest.js';
+import interval from './interval.js';
+import pngdiff from './pngdiff.js';
+import slack from './slack.js';
+import discord from './discord.js';
+import webshot from './webshot.js';
 
-module.exports = {
+export {
 	digest,
 	interval,
 	pngdiff,
 	slack,
+	discord,
 	webshot,
 };
