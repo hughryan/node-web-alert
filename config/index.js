@@ -3,9 +3,9 @@ import 'dotenv/config';
 const config = {
 	interval: 15000, // milliseconds
 	watch: [
-		'https://www.google.com',
+		'https://www.microsoft.com'
 	],
-	threshold: 0.9,
+	threshold: 1,
 	path: 'screenshots',
 	slack: {
 		token: process.env.SLACK_TOKEN,
