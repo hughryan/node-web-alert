@@ -18,6 +18,8 @@ import {
 
 mkdirp.sync(config.path);
 
+console.log('Initializing...');
+
 interval(
 	() => Promise.all(R.map(async (uri) => {
 		try {
@@ -29,7 +31,7 @@ interval(
 
 			if (existsSync(imgPath)) {
 				const prev = readFileSync(imgPath);
-				const diff = pngdiff(prev, next, config.threshold);
+				const diff = pngdiff(prev, next, config.diffThreshold);
 
 				if (diff.image) writeFileSync(diffPath, diff.image);
 				if (diff.pixels > 0) {
@@ -72,5 +74,5 @@ interval(
 			console.log(err);
 		}
 	}, config.watch)),
-	config.interval,
+	config.intervalMs,
 );
