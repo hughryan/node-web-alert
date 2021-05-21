@@ -1,7 +1,7 @@
-const pixelmatch = require('pixelmatch');
-const { PNG } = require('pngjs');
+import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 
-module.exports = (img1, img2, threshold) => {
+export default (img1, img2, threshold) => {
 	const img1png = PNG.sync.read(img1);
 	const img2png = PNG.sync.read(img2);
 

@@ -1,6 +1,6 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
-module.exports = async (uri) => {
+export default async (uri) => {
 	const browser = await puppeteer.launch({
 		args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
 	});
@@ -20,7 +20,7 @@ module.exports = async (uri) => {
 		waitUntil: 'networkidle0',
 	});
 
-	await page.waitFor(10000);
+	await page.waitForTimeout(10000);
 
 	const shot = await page.screenshot();
 

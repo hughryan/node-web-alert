@@ -1,10 +1,13 @@
-const { WebClient, IncomingWebhook } = require('@slack/client');
-const config = require('../config/index.js');
+import { WebClient } from '@slack/web-api';
+import { IncomingWebhook } from '@slack/webhook';
+import config from '../config/index.js';
 
-const webclient = new WebClient(config.slack.token);
-const webhook = new IncomingWebhook(config.slack.webhook_url);
+const enabled = config.slack.webhook_url && config.slack.token && config.slack.channel;
+const webclient = enabled ? new WebClient(config.slack.token) : undefined;
+const webhook = enabled ? new IncomingWebhook(config.slack.webhook_url) : undefined;
 
-module.exports = {
+export default {
+	enabled,
 	webclient,
 	webhook,
 };
