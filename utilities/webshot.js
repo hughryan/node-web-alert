@@ -13,22 +13,22 @@ process.on('SIGTERM', onClose);
 export default async (uri) => {
 	const page = await browser.newPage();
 	await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36');
-
 	await page.setViewport({
 		width: config.browserWidth,
 		height: config.browserHeight,
 	});
 
-	await page.goto(uri, {
-		timeout: config.timeoutMs,
-		waitUntil: 'networkidle0',
-	});
+	try {
+		await page.goto(uri, {
+			timeout: config.timeoutMs,
+			waitUntil: 'networkidle0',
+		});
+	} catch (err) {
+		console.log(`Timed out loading ${uri} after ${config.timeoutMs}ms`);
+	}
 
 	await page.waitForTimeout(config.waitAfterLoadMs);
-
-	console.log(`Taking snapshot of ${uri}`);
 	const shot = await page.screenshot();
-
 	await page.close();
 
 	return shot;
