@@ -2,11 +2,15 @@ import puppeteer from 'puppeteer';
 import { PuppeteerBlocker } from '@cliqz/adblocker-puppeteer';
 import fetch from 'cross-fetch';
 import { promises as fs } from 'fs';
+import which from 'which';
 import config from '../config/index.js';
 
-const browser = await puppeteer.launch({
+const chromiumPath = which.sync('chromium', {nothrow: true})
+const options = {
 	args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
-});
+};
+if (chromiumPath) options.executablePath = chromiumPath;
+const browser = await puppeteer.launch();
 
 const onClose = () => browser.close();
 process.on('SIGINT', onClose);
@@ -21,6 +25,8 @@ export default async (uri) => {
 		write: fs.writeFile,
 	}).then((blocker) => {
 		blocker.enableBlockingInPage(page);
+	}).catch(err => {
+		console.log('ERROR: Failed to load blocklists', err);
 	});
 	await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36');
 	await page.setViewport({
@@ -28,14 +34,10 @@ export default async (uri) => {
 		height: config.browserHeight,
 	});
 
-	try {
-		await page.goto(uri, {
-			timeout: config.loadWaitMs,
-			waitUntil: 'networkidle0',
-		});
-	} catch (err) {
-		console.log(`WARNING: ${uri} exceeded load wait of ${config.loadWaitMs}ms`);
-	}
+	await page.goto(uri, {
+		timeout: config.loadWaitMs,
+		waitUntil: 'networkidle0',
+	});
 
 	await page.waitForTimeout(config.waitAfterLoadMs);
 	const shot = await page.screenshot();

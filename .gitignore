@@ -66,3 +66,9 @@ certs/
 
 # Screenshots
 screenshots/
+
+# Blocklists
+engine.bin
+
+# Docker BuildKit
+buildkitd.toml
