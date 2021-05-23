@@ -15,7 +15,7 @@ set configuration in `./config/index.js`
 #### `yarn build`
 builds node-web-alert
 
-### `yarn push <registry>`
+#### `yarn push <registry>`
 builds multi-arch and pushes node-web-alert to a docker registry
 
 #### `yarn start`
