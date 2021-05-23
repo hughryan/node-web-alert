@@ -10,7 +10,7 @@ const options = {
 	args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
 };
 if (chromiumPath) options.executablePath = chromiumPath;
-const browser = await puppeteer.launch();
+const browser = await puppeteer.launch(options);
 
 const onClose = () => browser.close();
 process.on('SIGINT', onClose);
