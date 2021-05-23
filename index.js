@@ -74,7 +74,7 @@ interval(
 				}
 				writeFileSync(imgPath, next);
 			} catch (err) {
-				console.log(err);
+				console.log(`${err.message} for: ${uri}`);
 			}
 		}, config.watch));
 	},

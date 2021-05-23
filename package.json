@@ -9,6 +9,7 @@
 	"scripts": {
 		"attach": "docker attach webalert || exit 0",
 		"build": "docker build -t webalert .",
+		"push": ". ./scripts/push.sh",
 		"start": "docker run -d -it --name webalert webalert",
 		"stop": "docker stop webalert",
 		"poststop": "docker rm webalert",
@@ -30,6 +31,7 @@
 		"pixelmatch": "5.2.1",
 		"pngjs": "6.0.0",
 		"puppeteer": "9.1.1",
-		"ramda": "0.27.1"
+		"ramda": "0.27.1",
+		"which": "2.0.2"
 	}
 }

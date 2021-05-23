@@ -1,6 +1,8 @@
-FROM node:buster
+ARG ARCH=
+FROM ${ARCH}node:buster
 
 ENV NODE_ENV=production
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN apt-get update && apt-get install -y \
 	gconf-service \
@@ -41,7 +43,8 @@ RUN apt-get update && apt-get install -y \
 	libnss3 \
 	lsb-release \
 	xdg-utils \
-	wget
+	wget \
+	chromium
 
 WORKDIR /usr/src/webalert
 
