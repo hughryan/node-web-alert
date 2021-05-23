@@ -7,12 +7,12 @@ const config = {
 	],
 	// Value from 0 to 1 where the smaller the number the more precise the comparison, 1 seems to work best for most pages
 	diffThreshold: 1.0,
-	// Time to wait between polls in milliseconds, this number should be higher than waitAfterLoadMs + timeoutMs
+	// Time to wait between polls in milliseconds, this number should be higher than waitAfterLoadMs + loadWaitMs
 	intervalMs: 30000,
 	// Time to wait after the page loads in milliseconds, so that initial javascript and animations can play out
 	waitAfterLoadMs: 5000,
-	// Time to wait for the page to load before timing out and giving up
-	timeoutMs: 20000,
+	// Time to wait for the page to load
+	loadWaitMs: 20000,
 	// Width of the browser window, in pixels
 	browserWidth: 1920,
 	// Height of the browser window, in pixels
