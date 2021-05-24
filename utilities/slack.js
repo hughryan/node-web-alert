@@ -1,10 +1,9 @@
 import { WebClient } from '@slack/web-api';
 import { IncomingWebhook } from '@slack/webhook';
-import config from '../config/index.js';
 
-const enabled = config.slack.webhook_url && config.slack.token && config.slack.channel;
-const webclient = enabled ? new WebClient(config.slack.token) : undefined;
-const webhook = enabled ? new IncomingWebhook(config.slack.webhook_url) : undefined;
+const enabled = process.env.SLACK_WEBHOOK_URL && process.env.SLACK_TOKEN && process.env.SLACK_CHANNEL;
+const webclient = enabled ? new WebClient(process.env.SLACK_TOKEN) : undefined;
+const webhook = enabled ? new IncomingWebhook(process.env.SLACK_WEBHOOK_URL) : undefined;
 
 export default {
 	enabled,

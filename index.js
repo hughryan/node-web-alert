@@ -1,12 +1,11 @@
+import 'dotenv/config';
 import path from 'path';
 import {
 	existsSync,
 	readFileSync,
 	writeFileSync,
 } from 'fs';
-import R from 'ramda';
 import mkdirp from 'mkdirp';
-import config from './config/index.js';
 import {
 	digest,
 	interval,
@@ -16,25 +15,26 @@ import {
 	webshot,
 } from './utilities/index.js';
 
-mkdirp.sync(config.path);
-
 console.log('Initializing...');
+const urlWatchlist = JSON.parse(process.env.URL_WATCHLIST);
+const screenshotPath = process.env.SCREENSHOT_PATH;
+mkdirp.sync(screenshotPath);
 
 interval(
-	() => {
+	parseInt(process.env.INTERVAL_MS),
+	async () => {
 		console.log('Scraping pages...')
-
-		return Promise.all(R.map(async (uri) => {
+		for (let uri of urlWatchlist) {
 			try {
 				const uriHash = digest(uri).slice(0, 12);
-				const imgPath = path.join(config.path, `${uriHash}.png`);
-				const diffPath = path.join(config.path, `${uriHash}_diff.png`);
+				const imgPath = path.join(screenshotPath, `${uriHash}.png`);
+				const diffPath = path.join(screenshotPath, `${uriHash}_diff.png`);
 
 				const next = await webshot(uri);
 
 				if (existsSync(imgPath)) {
 					const prev = readFileSync(imgPath);
-					const diff = pngdiff(prev, next, config.diffThreshold);
+					const diff = pngdiff(prev, next, parseFloat(process.env.DIFF_THRESHOLD));
 
 					if (diff.image) writeFileSync(diffPath, diff.image);
 					if (diff.pixels > 0) {
@@ -46,7 +46,7 @@ interval(
 									`${Date.now()}.png`,
 									{
 										file: diff.image,
-										channels: config.slack.channel,
+										channels: process.env.SLACK_CHANNEL,
 									},
 								);
 								console.log('*** Posted change to slack ***');
@@ -76,7 +76,6 @@ interval(
 			} catch (err) {
 				console.log(`${err.message} for: ${uri}`);
 			}
-		}, config.watch));
-	},
-	config.intervalMs,
+		}
+	}
 );

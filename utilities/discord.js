@@ -1,7 +1,6 @@
 import Discord from 'discord.js';
-import config from '../config/index.js';
 
-const webhookUrl = config.discord.webhook_url;
+const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 const enabled = !!webhookUrl;
 const webhookId = enabled ? webhookUrl.split('/')[5] : undefined;
 const webhookToken = enabled ? webhookUrl.split('/')[6] : undefined;
