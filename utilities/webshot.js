@@ -4,24 +4,33 @@ import fetch from 'cross-fetch';
 import { promises as fs } from 'fs';
 import which from 'which';
 
+const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
 const chromiumPath = which.sync('chromium', {nothrow: true})
 const options = {
-	args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
+	args: [
+		'--disable-dev-shm-usage',
+		'--no-sandbox',
+		'--disable-setuid-sandbox',
+		'--disable-accelerated-2d-canvas',
+		'--disable-gpu',
+	],
 };
 if (chromiumPath) options.executablePath = chromiumPath;
 const browser = await puppeteer.launch(options);
 const pages = await browser.pages();
 const page = pages[0];
-PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
-	path: 'engine.bin',
-	read: fs.readFile,
-	write: fs.writeFile,
-}).then((blocker) => {
-	blocker.enableBlockingInPage(page);
-}).catch(err => {
-	console.log('ERROR: Failed to load blocklists', err);
-});
-await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36');
+if (process.env.ADBLOCK_ENABLED.toLowerCase() == 'true') {
+	PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
+		path: 'engine.bin',
+		read: fs.readFile,
+		write: fs.writeFile,
+	}).then((blocker) => {
+		blocker.enableBlockingInPage(page);
+	}).catch(err => {
+		console.log('ERROR: Failed to load adblock', err);
+	});
+}
+await page.setUserAgent(userAgent);
 await page.setViewport({
 	width: parseInt(process.env.BROWSER_WIDTH),
 	height: parseInt(process.env.BROWSER_HEIGHT),
