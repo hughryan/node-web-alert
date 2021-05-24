@@ -8,7 +8,6 @@ const initBrowser = async () => {
 	const chromiumPath = which.sync('chromium', {nothrow: true})
 	const options = {
 		args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
-		headless: false,
 	};
 	if (chromiumPath) options.executablePath = chromiumPath;
 
