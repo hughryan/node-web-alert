@@ -8,3 +8,6 @@ coverage
 .gitignore
 yarn-error.log
 certs
+buildkitd.toml
+.env-template
+screenshots

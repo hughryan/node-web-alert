@@ -1,7 +1,7 @@
-const interval = (fn, timeout) => {
+const interval = (intervalMs, fn) => {
 	fn().then(() => {
-		console.log(`=== Sleeping for ${timeout}ms ===`);
-		setTimeout(() => interval(fn, timeout), timeout);
+		console.log(`=== Sleeping for ${intervalMs}ms ===`);
+		setTimeout(() => interval(intervalMs, fn), intervalMs);
 	}).catch(err => {
 		console.log('Error: ', err);
 	});
