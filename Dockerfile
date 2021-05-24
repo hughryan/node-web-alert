@@ -1,10 +1,11 @@
 ARG ARCH=
-FROM ${ARCH}node:buster
+FROM ${ARCH}node:buster-slim
 
 ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN apt-get update && apt-get install -y \
+	dumb-init \
 	gconf-service \
 	libasound2 \
 	libatk1.0-0 \
