@@ -5,6 +5,7 @@ import {
 	readFileSync,
 	writeFileSync,
 } from 'fs';
+import R from 'ramda';
 import mkdirp from 'mkdirp';
 import {
 	digest,
@@ -17,6 +18,12 @@ import {
 
 console.log('Initializing...');
 const urlWatchlist = JSON.parse(process.env.URL_WATCHLIST);
+console.log('Watchlist:', urlWatchlist);
+const batchedWatchlist = R.splitEvery(
+	parseInt(process.env.URL_BATCH_SIZE),
+	urlWatchlist
+);
+console.log('Batched:', batchedWatchlist);
 const screenshotPath = process.env.SCREENSHOT_PATH;
 mkdirp.sync(screenshotPath);
 
@@ -24,58 +31,61 @@ interval(
 	parseInt(process.env.INTERVAL_MS),
 	async () => {
 		console.log('Scraping pages...')
-		for (let uri of urlWatchlist) {
-			try {
-				const uriHash = digest(uri).slice(0, 12);
-				const imgPath = path.join(screenshotPath, `${uriHash}.png`);
-				const diffPath = path.join(screenshotPath, `${uriHash}_diff.png`);
+		for (let batch of batchedWatchlist) {
+			console.log('Batch:', batch);
+			await Promise.all(R.addIndex(R.map)(async (uri, idx) => {
+				try {
+					const uriHash = digest(uri).slice(0, 12);
+					const imgPath = path.join(screenshotPath, `${uriHash}.png`);
+					const diffPath = path.join(screenshotPath, `${uriHash}_diff.png`);
 
-				const next = await webshot(uri);
+					const next = await webshot(uri, idx);
 
-				if (existsSync(imgPath)) {
-					const prev = readFileSync(imgPath);
-					const diff = pngdiff(prev, next, parseFloat(process.env.DIFF_THRESHOLD));
+					if (existsSync(imgPath)) {
+						const prev = readFileSync(imgPath);
+						const diff = pngdiff(prev, next, parseFloat(process.env.DIFF_THRESHOLD));
 
-					if (diff.image) writeFileSync(diffPath, diff.image);
-					if (diff.pixels > 0) {
-						console.log(`${diff.pixels} pixels changed on: ${uri}`);
-						if (diff.image) {
-							if (slack.enabled) {
-								slack.webhook.send(`Change detected on: ${uri}`);
-								const result = await slack.webclient.files.upload(
-									`${Date.now()}.png`,
-									{
-										file: diff.image,
-										channels: process.env.SLACK_CHANNEL,
-									},
-								);
-								console.log('*** Posted change to slack ***');
+						if (diff.image) writeFileSync(diffPath, diff.image);
+						if (diff.pixels > 0) {
+							console.log(`${diff.pixels} pixels changed on: ${uri}`);
+							if (diff.image) {
+								if (slack.enabled) {
+									slack.webhook.send(`Change detected on: ${uri}`);
+									const result = await slack.webclient.files.upload(
+										`${Date.now()}.png`,
+										{
+											file: diff.image,
+											channels: process.env.SLACK_CHANNEL,
+										},
+									);
+									console.log('*** Posted change to slack ***');
+								}
+								if (discord.enabled) {
+									await discord.webhook.send(`Change detected on: ${uri}`, {
+										embeds: [{
+										thumbnail: {
+											url: `attachment://${Date.now()}.png`
+											}
+										}],
+										files: [{
+											attachment: diffPath,
+											name: `${Date.now()}.png`
+										}]
+									})
+									console.log('*** Posted change to discord ***');
+								}
 							}
-							if (discord.enabled) {
-								await discord.webhook.send(`Change detected on: ${uri}`, {
-									embeds: [{
-									thumbnail: {
-										url: `attachment://${Date.now()}.png`
-										}
-									}],
-									files: [{
-										attachment: diffPath,
-										name: `${Date.now()}.png`
-									}]
-								})
-								console.log('*** Posted change to discord ***');
-							}
+						} else {
+							console.log(`No change detected on: ${uri}`);
 						}
 					} else {
-						console.log(`No change detected on: ${uri}`);
+						console.log(`No previous snapshot for: ${uri}`);
 					}
-				} else {
-					console.log(`No previous snapshot for: ${uri}`);
+					writeFileSync(imgPath, next);
+				} catch (err) {
+					console.log(`${err.message} for: ${uri}`);
 				}
-				writeFileSync(imgPath, next);
-			} catch (err) {
-				console.log(`${err.message} for: ${uri}`);
-			}
+			}, batch));
 		}
 	}
 );
