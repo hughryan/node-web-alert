@@ -17,7 +17,7 @@ const initBrowser = async () => {
 
 const initPages = async (browser) => {
 	// browser starts with a single page
-	for (let i = 1; i < process.env.URL_BATCH_SIZE; i++) {
+	for (let i = 1; i < parseInt(process.env.MAX_PAGES); i++) {
 		await browser.newPage();
 	}
 	const pages = await browser.pages();
@@ -47,7 +47,10 @@ const initPages = async (browser) => {
 const browser = await initBrowser();
 const pages = await initPages(browser);
 
-const onClose = () => browser.close();
+const onClose = () => {
+	browser.close();
+	process.exit(1);
+}
 process.on('SIGINT', onClose);
 process.on('SIGHUP', onClose);
 process.on('SIGTERM', onClose);
@@ -59,5 +62,5 @@ export default async (uri, idx) => {
 	});
 	await pages[idx].waitForTimeout(parseInt(process.env.WAIT_AFTER_LOAD_MS));
 
-	return await pages[idx].screenshot();
+	return pages[idx].screenshot();
 };
