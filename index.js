@@ -5,7 +5,6 @@ import {
 	readFileSync,
 	writeFileSync,
 } from 'fs';
-import R, { max } from 'ramda';
 import mkdirp from 'mkdirp';
 import {
 	digest,
