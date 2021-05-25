@@ -56,4 +56,5 @@ RUN yarn install --production=true
 
 COPY . .
 
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD [ "yarn", "prod" ]

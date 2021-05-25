@@ -7,7 +7,13 @@ import which from 'which';
 const initBrowser = async () => {
 	const chromiumPath = which.sync('chromium', {nothrow: true})
 	const options = {
-		args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox'],
+		args: [
+			'--disable-dev-shm-usage',
+			'--no-sandbox',
+			'--disable-setuid-sandbox',
+			'--disable-accelerated-2d-canvas',
+			'--disable-gpu',
+		],
 	};
 	if (chromiumPath) options.executablePath = chromiumPath;
 
@@ -20,21 +26,23 @@ const initPages = async (browser) => {
 		await browser.newPage();
 	}
 	const pages = await browser.pages();
-	try {
-		const blocker = await PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
-			path: 'engine.bin',
-			read: fs.readFile,
-			write: fs.writeFile,
-		});
-		for (let page of pages) {
-			blocker.enableBlockingInPage(page);
+	if (process.env.ADBLOCK_ENABLED.toLowerCase() == 'true') {
+		try {
+			const blocker = await PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
+				path: 'engine.bin',
+				read: fs.readFile,
+				write: fs.writeFile,
+			});
+			for (let page of pages) {
+				blocker.enableBlockingInPage(page);
+			}
+		} catch (err) {
+			console.log('ERROR: Failed to initalize blocklist', err);
 		}
-	} catch (err) {
-		console.log('ERROR: Failed to initalize blocklist', err);
 	}
 	for (let page of pages) {
 		// these are not the droids you're looking for
-		await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36');
+		await page.setUserAgent(process.env.USER_AGENT);
 		await page.setViewport({
 			width: parseInt(process.env.BROWSER_WIDTH),
 			height: parseInt(process.env.BROWSER_HEIGHT),
