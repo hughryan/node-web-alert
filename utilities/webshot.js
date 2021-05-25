@@ -4,49 +4,70 @@ import fetch from 'cross-fetch';
 import { promises as fs } from 'fs';
 import which from 'which';
 
-const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
-const chromiumPath = which.sync('chromium', {nothrow: true})
-const options = {
-	args: [
-		'--disable-dev-shm-usage',
-		'--no-sandbox',
-		'--disable-setuid-sandbox',
-		'--disable-accelerated-2d-canvas',
-		'--disable-gpu',
-	],
-};
-if (chromiumPath) options.executablePath = chromiumPath;
-const browser = await puppeteer.launch(options);
-const pages = await browser.pages();
-const page = pages[0];
-if (process.env.ADBLOCK_ENABLED.toLowerCase() == 'true') {
-	PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
-		path: 'engine.bin',
-		read: fs.readFile,
-		write: fs.writeFile,
-	}).then((blocker) => {
-		blocker.enableBlockingInPage(page);
-	}).catch(err => {
-		console.log('ERROR: Failed to load adblock', err);
-	});
-}
-await page.setUserAgent(userAgent);
-await page.setViewport({
-	width: parseInt(process.env.BROWSER_WIDTH),
-	height: parseInt(process.env.BROWSER_HEIGHT),
-});
+const initBrowser = async () => {
+	const chromiumPath = which.sync('chromium', {nothrow: true})
+	const options = {
+		args: [
+			'--disable-dev-shm-usage',
+			'--no-sandbox',
+			'--disable-setuid-sandbox',
+			'--disable-accelerated-2d-canvas',
+			'--disable-gpu',
+		],
+	};
+	if (chromiumPath) options.executablePath = chromiumPath;
 
-const onClose = () => browser.close();
+	return await puppeteer.launch(options);
+}
+
+const initPages = async (browser) => {
+	// browser starts with a single page
+	for (let i = 1; i < parseInt(process.env.MAX_PAGES); i++) {
+		await browser.newPage();
+	}
+	const pages = await browser.pages();
+	if (process.env.ADBLOCK_ENABLED.toLowerCase() == 'true') {
+		try {
+			const blocker = await PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch, {
+				path: 'engine.bin',
+				read: fs.readFile,
+				write: fs.writeFile,
+			});
+			for (let page of pages) {
+				blocker.enableBlockingInPage(page);
+			}
+		} catch (err) {
+			console.log('ERROR: Failed to initalize blocklist', err);
+		}
+	}
+	for (let page of pages) {
+		// these are not the droids you're looking for
+		await page.setUserAgent(process.env.USER_AGENT);
+		await page.setViewport({
+			width: parseInt(process.env.BROWSER_WIDTH),
+			height: parseInt(process.env.BROWSER_HEIGHT),
+		});
+	}
+	return pages;
+}
+
+const browser = await initBrowser();
+const pages = await initPages(browser);
+
+const onClose = () => {
+	browser.close();
+	process.exit(1);
+}
 process.on('SIGINT', onClose);
 process.on('SIGHUP', onClose);
 process.on('SIGTERM', onClose);
 
-export default async (uri) => {
-	await page.goto(uri, {
+export default async (uri, idx) => {
+	await pages[idx].goto(uri, {
 		timeout: parseInt(process.env.LOAD_TIMEOUT),
 		waitUntil: 'load',
 	});
-	await page.waitForTimeout(parseInt(process.env.WAIT_AFTER_LOAD_MS));
+	await pages[idx].waitForTimeout(parseInt(process.env.WAIT_AFTER_LOAD_MS));
 
-	return await page.screenshot();
+	return pages[idx].screenshot();
 };

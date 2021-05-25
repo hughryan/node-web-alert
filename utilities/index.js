@@ -4,6 +4,7 @@ import pngdiff from './pngdiff.js';
 import slack from './slack.js';
 import discord from './discord.js';
 import webshot from './webshot.js';
+import sleep from './sleep.js';
 
 export {
 	digest,
@@ -12,4 +13,5 @@ export {
 	slack,
 	discord,
 	webshot,
+	sleep,
 };
